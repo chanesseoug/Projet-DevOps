@@ -1,0 +1,59 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: portfolio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/portfolio
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Generate Prisma client
+        run: |
+          cd backend
+          npx prisma generate
+
+      - name: Apply migrations
+        run: |
+          cd backend
+          npx prisma migrate deploy
+
+      # Tu peux ajouter une étape de tests ici :
+      # - name: Run tests
+      #   run: cd backend && npm test
