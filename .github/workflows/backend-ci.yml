@@ -22,38 +22,32 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      DATABASE_URL: postgresql://postgres:password@localhost:5432/portfolio
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '18'
 
       - name: Install dependencies
         run: |
           cd backend
-          npm ci
+          npm install
 
-      - name: Generate Prisma client
+      - name: Run Prisma migrations
         run: |
           cd backend
           npx prisma generate
-
-      - name: Apply migrations
-        run: |
-          cd backend
           npx prisma migrate deploy
 
-      # Tu peux ajouter une étape de tests ici :
-      # - name: Run tests
-      #   run: cd backend && npm test
+      - name: Run tests
+        run: |
+          cd backend
+          npm test
