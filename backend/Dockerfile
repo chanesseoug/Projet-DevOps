@@ -1,14 +1,22 @@
-FROM node:18-slim AS build
+# Étape 1 : build avec dependencies Prisma
+FROM node:18-slim AS builder
+
 WORKDIR /app
 COPY package*.json ./
-RUN apt-get update && apt-get install -y openssl \
-    && npm install
+RUN npm install
+
 COPY . .
+
+# Générer Prisma client
 RUN npx prisma generate
+
+# Étape 2 : image finale (toujours Node slim)
 FROM node:18-slim
-WORKDIR /app
+
+# Installer openssl pour Prisma
 RUN apt-get update && apt-get install -y openssl
-COPY --from=build /app /app
-RUN npm install --omit=dev
-EXPOSE 5000
-CMD ["npm", "run", "dev"]
+
+WORKDIR /app
+COPY --from=builder /app .
+
+CMD ["node", "index.js"]

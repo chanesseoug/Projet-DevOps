@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: chanesseouguenoune/backend:latest
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: projet-configmap
+        - secretRef:
+            name: projet-secrets
+        env:
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: projet-secrets
+              key: JWT_SECRET

@@ -6,11 +6,13 @@ function Signup() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const API_URL = "/api"; 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://mon-backend.test:5000/api/auth/signup', {
+      
+      const res = await fetch(`http://localhost:5000${API_URL}/auth/signup`,  { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,12 +25,12 @@ function Signup() {
       if (res.ok) {
         alert('Inscription réussie !');
         localStorage.setItem('token', data.token);
-        navigate('/portfolio');
+        navigate('/portfolio'); 
       } else {
         alert(data.error || 'Erreur à l’inscription');
       }
     } catch (err) {
-      console.error('Erreur de requête :', err);
+      console.error('Erreur de connexion :', err);
       alert('Erreur de connexion au serveur');
     }
   };

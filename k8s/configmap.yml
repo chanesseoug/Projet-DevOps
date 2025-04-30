@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: projet-configmap
+data:
+  DATABASE_URL: "postgresql://postgres:JjmzsIwpZEZGZmCDQoAofbwemuwamzsa@shortline.proxy.rlwy.net:37042/railway"
+  PORT_BACKEND: "5000"
+  PORT_FRONTEND: "3000"
